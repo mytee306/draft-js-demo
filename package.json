@@ -37,6 +37,7 @@
     ]
   },
   "devDependencies": {
-    "@types/draft-js": "^0.10.30"
+    "@types/draft-js": "^0.10.30",
+    "@types/prismjs": "^1.16.0"
   }
 }
