@@ -8,6 +8,8 @@
     "@types/react": "16.8.16",
     "@types/react-dom": "16.8.4",
     "draft-js": "^0.10.5",
+    "immutable": "^4.0.0-rc.12",
+    "prismjs": "^1.16.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0",
