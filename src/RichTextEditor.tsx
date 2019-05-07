@@ -11,6 +11,7 @@ import {
   RichUtils,
 } from 'draft-js';
 import React, { createRef, KeyboardEvent, MouseEvent, SFC } from 'react';
+import './Draft.css';
 import './RichTextEditor.css';
 
 export type Style = DraftBlockType | DraftInlineStyleType;
