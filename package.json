@@ -12,9 +12,11 @@
     "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",
     "prismjs": "^1.16.0",
+    "ramda": "^0.26.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0",
+    "react-select": "^3.0.4",
     "typescript": "3.4.5"
   },
   "scripts": {
@@ -40,6 +42,8 @@
   },
   "devDependencies": {
     "@types/draft-js": "^0.10.30",
-    "@types/prismjs": "^1.16.0"
+    "@types/prismjs": "^1.16.0",
+    "@types/ramda": "^0.26.16",
+    "@types/react-select": "^3.0.0"
   }
 }
