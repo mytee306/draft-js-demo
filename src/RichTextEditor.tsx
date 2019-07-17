@@ -1,15 +1,5 @@
 import classNames from 'classnames';
-import {
-  ContentBlock,
-  DraftBlockType,
-  DraftEditorCommand,
-  DraftHandleValue,
-  DraftInlineStyleType,
-  Editor,
-  EditorState,
-  getDefaultKeyBinding,
-  RichUtils,
-} from 'draft-js';
+import { ContentBlock, DraftBlockType, DraftEditorCommand, DraftHandleValue, DraftInlineStyleType, Editor, EditorState, getDefaultKeyBinding, RichUtils } from 'draft-js';
 import React, { createRef, KeyboardEvent, MouseEvent, SFC } from 'react';
 import './Draft.css';
 import './RichTextEditor.css';
@@ -67,9 +57,9 @@ const BLOCK_TYPES: BlockTypes = [
   { label: 'H5', style: 'header-five' },
   { label: 'H6', style: 'header-six' },
   { label: 'Blockquote', style: 'blockquote' },
+  { label: 'Code Block', style: 'code-block' },
   { label: 'UL', style: 'unordered-list-item' },
   { label: 'OL', style: 'ordered-list-item' },
-  { label: 'Code Block', style: 'code-block' },
 ];
 
 export interface BlockStyleControlsProps {
