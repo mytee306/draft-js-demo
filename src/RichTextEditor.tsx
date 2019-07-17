@@ -15,32 +15,29 @@ export interface StyleButtonProps<S extends Style> {
   label: string;
 }
 
-class StyleButton<S extends Style> extends React.Component<
-  StyleButtonProps<S>
-> {
-  render() {
-    const {
-      props: { active, style, onToggle, label },
-    } = this;
+const StyleButton = <S extends Style>({
+  active,
+  style,
+  onToggle,
+  label,
+}: StyleButtonProps<S>) => {
+  const handleToggle = (e: MouseEvent) => {
+    e.preventDefault();
 
-    const handleToggle = (e: MouseEvent) => {
-      e.preventDefault();
+    onToggle(style);
+  };
 
-      onToggle(style);
-    };
-
-    return (
-      <span
-        className={classNames('RichEditor-styleButton', {
-          'RichEditor-activeButton': active,
-        })}
-        onMouseDown={handleToggle}
-      >
-        {label}
-      </span>
-    );
-  }
-}
+  return (
+    <span
+      className={classNames('RichEditor-styleButton', {
+        'RichEditor-activeButton': active,
+      })}
+      onMouseDown={handleToggle}
+    >
+      {label}
+    </span>
+  );
+};
 
 export interface BlockType {
   label: string;
