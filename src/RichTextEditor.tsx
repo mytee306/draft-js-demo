@@ -13,7 +13,6 @@ import {
 import { find, pipe, prop } from 'ramda';
 import React, { KeyboardEvent, MouseEvent, SFC } from 'react';
 import Select from 'react-select';
-import { Omit } from 'utility-types';
 import './Draft.css';
 import './RichTextEditor.css';
 
@@ -52,15 +51,9 @@ const StyleButton = <S extends Style>({
   );
 };
 
-export interface BlockType {
+interface BlockValue {
   label: string;
-  style: DraftBlockType;
-}
-
-export type BlockTypes = BlockType[];
-
-interface BlockValue extends Omit<BlockType, 'style'> {
-  value: BlockType['style'];
+  value: DraftBlockType;
 }
 
 type BlockValues = BlockValue[];
