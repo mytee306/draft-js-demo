@@ -169,15 +169,7 @@ const InlineStyleControls: SFC<InlineStyleControlsProps> = ({
   );
 };
 
-// Custom overrides for "code" style.
-const styleMap = {
-  CODE: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
-    fontSize: 16,
-    padding: 2,
-  },
-};
+const styleMap = {};
 
 const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {
