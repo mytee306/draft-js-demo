@@ -1,6 +1,18 @@
 import classNames from 'classnames';
-import { ContentBlock, DraftBlockType, DraftEditorCommand, DraftHandleValue, DraftInlineStyleType, Editor, EditorState, getDefaultKeyBinding, RichUtils } from 'draft-js';
-import React, { createRef, KeyboardEvent, MouseEvent, SFC } from 'react';
+import {
+  ContentBlock,
+  DraftBlockType,
+  DraftEditorCommand,
+  DraftHandleValue,
+  DraftInlineStyleType,
+  Editor,
+  EditorState,
+  getDefaultKeyBinding,
+  RichUtils,
+} from 'draft-js';
+import { find, pipe, prop } from 'ramda';
+import React, { KeyboardEvent, MouseEvent, SFC } from 'react';
+import Select from 'react-select';
 import './Draft.css';
 import './RichTextEditor.css';
 
@@ -46,17 +58,39 @@ export interface BlockType {
 
 export type BlockTypes = BlockType[];
 
-const BLOCK_TYPES: BlockTypes = [
-  { label: 'H1', style: 'header-one' },
-  { label: 'H2', style: 'header-two' },
-  { label: 'H3', style: 'header-three' },
-  { label: 'H4', style: 'header-four' },
-  { label: 'H5', style: 'header-five' },
-  { label: 'H6', style: 'header-six' },
-  { label: 'Blockquote', style: 'blockquote' },
-  { label: 'Code Block', style: 'code-block' },
-  { label: 'UL', style: 'unordered-list-item' },
-  { label: 'OL', style: 'ordered-list-item' },
+interface BlockValue extends Omit<BlockType, 'style'> {
+  value: BlockType['style'];
+}
+
+type BlockValues = BlockValue[];
+
+const headings: BlockValues = [
+  { label: 'H1', value: 'header-one' },
+  { label: 'H2', value: 'header-two' },
+  { label: 'H3', value: 'header-three' },
+  { label: 'H4', value: 'header-four' },
+  { label: 'H5', value: 'header-five' },
+  { label: 'H6', value: 'header-six' },
+];
+
+const lists: BlockValues = [
+  { label: 'UL', value: 'unordered-list-item' },
+  { label: 'OL', value: 'ordered-list-item' },
+];
+
+const otherBlockTypes: BlockValues = [
+  { label: 'Blockquote', value: 'blockquote' },
+  { label: 'Code Block', value: 'code-block' },
+];
+
+const blockTypes = otherBlockTypes.concat(headings).concat(lists);
+
+const blockValues: Array<
+  BlockValue | { label: BlockValue['label']; options: BlockValues }
+> = [
+  ...otherBlockTypes,
+  { label: 'Headings', options: headings },
+  { label: 'Lists', options: lists },
 ];
 
 export interface BlockStyleControlsProps {
@@ -75,17 +109,21 @@ const BlockStyleControls: SFC<BlockStyleControlsProps> = ({
     .getBlockForKey(selection.getStartKey())
     .getType();
 
+  const findActive = find<BlockValue>(({ value }) => blockType === value);
+
+  const type = findActive(blockTypes);
+
   return (
-    <div className="RichEditor-controls">
-      {BLOCK_TYPES.map(type => (
-        <StyleButton
-          key={type.label}
-          active={type.style === blockType}
-          label={type.label}
-          onToggle={onToggle}
-          style={type.style}
-        />
-      ))}
+    <div className="RichEditor-controls" style={{ minWidth: 130, zIndex: 2 }}>
+      <Select
+        placeholder="Type..."
+        options={blockValues}
+        value={type}
+        onChange={pipe(
+          prop('value') as any,
+          onToggle,
+        )}
+      />
     </div>
   );
 };
@@ -219,14 +257,24 @@ const RichEditor: React.FC = () => {
 
   return (
     <div className="RichEditor-root">
-      <BlockStyleControls
-        editorState={editorState}
-        onToggle={toggleBlockType}
-      />
-      <InlineStyleControls
-        editorState={editorState}
-        onToggle={toggleInlineStyle}
-      />
+      <div
+        style={{
+          display: 'grid',
+          gridAutoFlow: 'column',
+          gridGap: 20,
+          alignItems: 'center',
+          justifyContent: 'right',
+        }}
+      >
+        <BlockStyleControls
+          editorState={editorState}
+          onToggle={toggleBlockType}
+        />
+        <InlineStyleControls
+          editorState={editorState}
+          onToggle={toggleInlineStyle}
+        />
+      </div>
       <div
         className={classNames('RichEditor-editor', {
           'RichEditor-hidePlaceholder': hasText && isUnStyled,
