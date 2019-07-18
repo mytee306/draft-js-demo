@@ -1,3 +1,10 @@
+import { IconButton, Tooltip, useTheme } from '@material-ui/core';
+import {
+  FormatBold,
+  FormatItalic,
+  FormatQuote,
+  FormatUnderlined,
+} from '@material-ui/icons';
 import classNames from 'classnames';
 import {
   ContentBlock,
@@ -21,17 +28,17 @@ export type Style = DraftBlockType | DraftInlineStyleType;
 export type OnToggle<S extends Style> = (style: S) => void;
 
 export interface StyleButtonProps<S extends Style> {
-  active: boolean;
   style: S;
   onToggle: OnToggle<S>;
   label: string;
+  icon: React.ReactElement;
 }
 
 const StyleButton = <S extends Style>({
-  active,
   style,
   onToggle,
   label,
+  icon,
 }: StyleButtonProps<S>) => {
   const handleToggle = (e: MouseEvent) => {
     e.preventDefault();
@@ -40,14 +47,9 @@ const StyleButton = <S extends Style>({
   };
 
   return (
-    <span
-      className={classNames('RichEditor-styleButton', {
-        'RichEditor-activeButton': active,
-      })}
-      onMouseDown={handleToggle}
-    >
-      {label}
-    </span>
+    <Tooltip title={label} onMouseDown={handleToggle}>
+      <IconButton>{icon}</IconButton>
+    </Tooltip>
   );
 };
 
@@ -125,15 +127,16 @@ const BlockStyleControls: SFC<BlockStyleControlsProps> = ({
 export interface InlineStyle {
   label: string;
   style: DraftInlineStyleType;
+  icon: React.ReactElement;
 }
 
 export type InlineStyles = InlineStyle[];
 
 const INLINE_STYLES: InlineStyles = [
-  { label: 'Bold', style: 'BOLD' },
-  { label: 'Italic', style: 'ITALIC' },
-  { label: 'Underline', style: 'UNDERLINE' },
-  { label: 'Monospace', style: 'CODE' },
+  { label: 'Bold', style: 'BOLD', icon: <FormatBold /> },
+  { label: 'Italic', style: 'ITALIC', icon: <FormatItalic /> },
+  { label: 'Underline', style: 'UNDERLINE', icon: <FormatUnderlined /> },
+  { label: 'Monospace', style: 'CODE', icon: <FormatQuote /> },
 ];
 
 export interface InlineStyleControlsProps {
@@ -145,19 +148,33 @@ const InlineStyleControls: SFC<InlineStyleControlsProps> = ({
   editorState,
   onToggle,
 }) => {
+  const theme = useTheme();
+
   const currentStyle = editorState.getCurrentInlineStyle();
 
   return (
     <div className="RichEditor-controls">
-      {INLINE_STYLES.map(type => (
-        <StyleButton
-          key={type.label}
-          active={currentStyle.has(type.style)}
-          label={type.label}
-          onToggle={onToggle}
-          style={type.style}
-        />
-      ))}
+      {INLINE_STYLES.map(({ icon, ...type }) => {
+        const { label, style } = type;
+        const active = currentStyle.has(style);
+
+        return (
+          <StyleButton<DraftInlineStyleType>
+            key={label}
+            onToggle={onToggle}
+            {...type}
+            icon={
+              <span
+                style={{
+                  color: active ? theme.palette.primary.light : 'inherit',
+                }}
+              >
+                {icon}
+              </span>
+            }
+          />
+        );
+      })}
     </div>
   );
 };
