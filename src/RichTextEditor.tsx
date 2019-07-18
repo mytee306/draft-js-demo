@@ -75,8 +75,8 @@ const headings: BlockValues = [
 ];
 
 const lists: BlockValues = [
-  { label: 'UL', value: 'unordered-list-item' },
-  { label: 'OL', value: 'ordered-list-item' },
+  { label: 'Bulleted', value: 'unordered-list-item' },
+  { label: 'Ordered', value: 'ordered-list-item' },
 ];
 
 const otherBlockTypes: BlockValues = [
@@ -90,8 +90,8 @@ const blockValues: Array<
   BlockValue | { label: BlockValue['label']; options: BlockValues }
 > = [
   ...otherBlockTypes,
-  { label: 'Headings', options: headings },
   { label: 'Lists', options: lists },
+  { label: 'Headings', options: headings },
 ];
 
 export interface BlockStyleControlsProps {
