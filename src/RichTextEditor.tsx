@@ -13,6 +13,7 @@ import {
 import { find, pipe, prop } from 'ramda';
 import React, { KeyboardEvent, MouseEvent, SFC } from 'react';
 import Select from 'react-select';
+import { Omit } from 'utility-types';
 import './Draft.css';
 import './RichTextEditor.css';
 
