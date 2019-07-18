@@ -291,7 +291,7 @@ const RichEditor: React.FC = () => {
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={mapKeyToEditorCommand}
           onChange={onChange}
-          placeholder="Tell a story..."
+          placeholder={isUnStyled ? '' : 'Tell a story...'}
           ref={editor}
           spellCheck={true}
         />
