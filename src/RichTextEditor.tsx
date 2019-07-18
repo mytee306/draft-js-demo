@@ -107,14 +107,14 @@ const BlockStyleControls: SFC<BlockStyleControlsProps> = ({
 
   const findActive = find<BlockValue>(({ value }) => blockType === value);
 
-  const type = findActive(blockTypes);
+  const activeType = findActive(blockTypes);
 
   return (
     <div className="RichEditor-controls" style={{ minWidth: 130, zIndex: 2 }}>
       <Select
         placeholder="Type..."
         options={blockValues}
-        value={type}
+        value={activeType || null}
         onChange={pipe(
           prop('value') as any,
           onToggle,
