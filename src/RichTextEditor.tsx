@@ -14,6 +14,7 @@ import {
   Editor,
   EditorState,
   getDefaultKeyBinding,
+  Modifier,
   RichUtils,
   SelectionState,
 } from 'draft-js';
@@ -22,6 +23,8 @@ import React, { KeyboardEvent, MouseEvent, SFC } from 'react';
 import Select from 'react-select';
 import './Draft.css';
 import './RichTextEditor.css';
+
+const tabCharacter = '  ';
 
 export type Style = DraftBlockType | DraftInlineStyleType;
 
@@ -293,6 +296,23 @@ const RichEditor: React.FC = () => {
           keyBindingFn={mapKeyToEditorCommand}
           onBlur={() => {
             setSelection(editorState.getSelection());
+          }}
+          onTab={e => {
+            e.preventDefault();
+
+            const newContentState = Modifier.replaceText(
+              editorState.getCurrentContent(),
+              editorState.getSelection(),
+              tabCharacter,
+            );
+
+            setEditorState(
+              EditorState.push(
+                editorState,
+                newContentState,
+                'insert-characters',
+              ),
+            );
           }}
         />
       </div>
