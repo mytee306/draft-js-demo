@@ -232,13 +232,6 @@ const RichEditor: React.FC = () => {
   };
 
   const mapKeyToEditorCommand = (e: KeyboardEvent) => {
-    if (e.keyCode === 9 /* TAB */) {
-      const newEditorState = RichUtils.onTab(e, editorState, 4 /* maxDepth */);
-      if (newEditorState !== editorState) {
-        setEditorState(newEditorState);
-      }
-      return null;
-    }
     return getDefaultKeyBinding(e);
   };
 
