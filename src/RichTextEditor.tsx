@@ -19,42 +19,12 @@ import {
   SelectionState,
 } from 'draft-js';
 import { find, pipe, prop } from 'ramda';
-import React, { KeyboardEvent, MouseEvent, SFC } from 'react';
+import React, { KeyboardEvent, SFC } from 'react';
 import Select from 'react-select';
 import './Draft.css';
 import './RichTextEditor.css';
 
 const tabCharacter = '  ';
-
-export type Style = DraftBlockType | DraftInlineStyleType;
-
-export type OnToggle<S extends Style> = (style: S) => void;
-
-export interface StyleButtonProps<S extends Style> {
-  style: S;
-  onToggle: OnToggle<S>;
-  label: string;
-  icon: React.ReactElement;
-}
-
-const StyleButton = <S extends Style>({
-  style,
-  onToggle,
-  label,
-  icon,
-}: StyleButtonProps<S>) => {
-  const handleToggle = (e: MouseEvent) => {
-    e.preventDefault();
-
-    onToggle(style);
-  };
-
-  return (
-    <Tooltip title={label} onMouseDown={handleToggle}>
-      <IconButton style={{ height: 48 }}>{icon}</IconButton>
-    </Tooltip>
-  );
-};
 
 interface BlockValue {
   label: string;
@@ -157,16 +127,19 @@ const InlineStyleControls: SFC<InlineStyleControlsProps> = ({
 
   return (
     <div>
-      {INLINE_STYLES.map(({ icon, ...type }) => {
-        const { label, style } = type;
+      {INLINE_STYLES.map(({ icon, label, style }) => {
         const active = currentStyle.has(style);
 
         return (
-          <StyleButton<DraftInlineStyleType>
+          <Tooltip
             key={label}
-            onToggle={onToggle}
-            {...type}
-            icon={
+            title={label}
+            onMouseDown={e => {
+              e.preventDefault();
+              onToggle(style);
+            }}
+          >
+            <IconButton style={{ height: 48 }}>
               <span
                 style={{
                   color: active ? theme.palette.primary.light : 'inherit',
@@ -174,8 +147,8 @@ const InlineStyleControls: SFC<InlineStyleControlsProps> = ({
               >
                 {icon}
               </span>
-            }
-          />
+            </IconButton>
+          </Tooltip>
         );
       })}
     </div>
