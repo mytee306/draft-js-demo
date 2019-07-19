@@ -1,7 +1,13 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 
-import { IconButton, Tooltip, useTheme } from '@material-ui/core';
+import {
+  Button,
+  Divider,
+  IconButton,
+  Tooltip,
+  useTheme,
+} from '@material-ui/core';
 import {
   FormatBold,
   FormatItalic,
@@ -10,6 +16,8 @@ import {
 } from '@material-ui/icons';
 import {
   ContentBlock,
+  convertFromRaw,
+  convertToRaw,
   DraftBlockType,
   DraftEditorCommand,
   DraftHandleValue,
@@ -176,6 +184,8 @@ const getBlockStyle = (block: ContentBlock) => {
   }
 };
 
+const contentKey = 'editor content';
+
 export interface RichEditorState {
   editorState: EditorState;
 }
@@ -184,6 +194,22 @@ const RichEditor: React.FC = () => {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty(),
   );
+
+  React.useEffect(() => {
+    const rawContent = localStorage.getItem(contentKey);
+
+    if (rawContent) {
+      const content = JSON.parse(rawContent);
+
+      setEditorState(
+        EditorState.push(
+          editorState,
+          convertFromRaw(content),
+          'insert-characters',
+        ),
+      );
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const editor = React.useRef<Editor>(null);
 
@@ -238,59 +264,81 @@ const RichEditor: React.FC = () => {
       .getType() === 'unstyled';
 
   return (
-    <div className="RichEditor-root">
-      <div
-        style={{
-          display: 'grid',
-          gridAutoFlow: 'column',
-          gridGap: 20,
-          alignItems: 'center',
-          justifyContent: 'right',
-        }}
-      >
-        <BlockStyleControls
-          editorState={editorState}
-          onToggle={toggleBlockType}
-        />
-        <InlineStyleControls
-          editorState={editorState}
-          onToggle={toggleInlineStyle}
-        />
-      </div>
-      <div className="RichEditor-editor" onClick={focus}>
-        <Editor
-          ref={editor}
-          editorState={editorState}
-          onChange={setEditorState}
-          spellCheck
-          placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
-          blockStyleFn={getBlockStyle}
-          customStyleMap={styleMap}
-          handleKeyCommand={handleKeyCommand}
-          keyBindingFn={mapKeyToEditorCommand}
-          onBlur={() => {
-            setSelection(editorState.getSelection());
+    <>
+      <div className="RichEditor-root">
+        <div
+          style={{
+            display: 'grid',
+            gridAutoFlow: 'column',
+            gridGap: 20,
+            alignItems: 'center',
+            justifyContent: 'right',
           }}
-          onTab={e => {
-            e.preventDefault();
+        >
+          <BlockStyleControls
+            editorState={editorState}
+            onToggle={toggleBlockType}
+          />
+          <InlineStyleControls
+            editorState={editorState}
+            onToggle={toggleInlineStyle}
+          />
+        </div>
+        <br />
+        <Divider />
+        <br />
+        <div className="RichEditor-editor" onClick={focus}>
+          <Editor
+            ref={editor}
+            editorState={editorState}
+            onChange={setEditorState}
+            spellCheck
+            placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
+            blockStyleFn={getBlockStyle}
+            customStyleMap={styleMap}
+            handleKeyCommand={handleKeyCommand}
+            keyBindingFn={mapKeyToEditorCommand}
+            onBlur={() => {
+              setSelection(editorState.getSelection());
+            }}
+            onTab={e => {
+              e.preventDefault();
 
-            const newContentState = Modifier.replaceText(
-              editorState.getCurrentContent(),
-              editorState.getSelection(),
-              tabCharacter,
-            );
+              const newContentState = Modifier.replaceText(
+                editorState.getCurrentContent(),
+                editorState.getSelection(),
+                tabCharacter,
+              );
 
-            setEditorState(
-              EditorState.push(
-                editorState,
-                newContentState,
-                'insert-characters',
-              ),
-            );
+              setEditorState(
+                EditorState.push(
+                  editorState,
+                  newContentState,
+                  'insert-characters',
+                ),
+              );
+            }}
+          />
+        </div>
+        <br />
+        <Divider />
+        <br />
+        <Button
+          variant="contained"
+          onClick={() => {
+            const content = editorState.getCurrentContent();
+
+            const rawContent = convertToRaw(content);
+
+            console.log(rawContent);
+
+            localStorage.setItem(contentKey, JSON.stringify(rawContent));
           }}
-        />
+        >
+          Save content
+        </Button>
       </div>
-    </div>
+    </>
   );
 };
 
