@@ -110,7 +110,7 @@ const BlockStyleControls: SFC<BlockStyleControlsProps> = ({
   const activeType = findActive(blockTypes);
 
   return (
-    <div className="RichEditor-controls" style={{ minWidth: 140, zIndex: 2 }}>
+    <div style={{ minWidth: 150, zIndex: 2 }}>
       <Select
         placeholder="Block Type..."
         options={blockValues}
@@ -153,7 +153,7 @@ const InlineStyleControls: SFC<InlineStyleControlsProps> = ({
   const currentStyle = editorState.getCurrentInlineStyle();
 
   return (
-    <div className="RichEditor-controls">
+    <div>
       {INLINE_STYLES.map(({ icon, ...type }) => {
         const { label, style } = type;
         const active = currentStyle.has(style);
