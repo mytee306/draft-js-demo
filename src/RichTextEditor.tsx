@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+
 import { IconButton, Tooltip, useTheme } from '@material-ui/core';
 import {
   FormatBold,
@@ -198,9 +201,9 @@ const RichEditor: React.FC = () => {
 
   const handleKeyCommand = (
     command: DraftEditorCommand,
-    editorState: EditorState,
+    newEditorState: EditorState,
   ): DraftHandleValue => {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
+    const newState = RichUtils.handleKeyCommand(newEditorState, command);
 
     if (newState) {
       setEditorState(newState);
@@ -211,9 +214,7 @@ const RichEditor: React.FC = () => {
     }
   };
 
-  const mapKeyToEditorCommand = (e: KeyboardEvent) => {
-    return getDefaultKeyBinding(e);
-  };
+  const mapKeyToEditorCommand = (e: KeyboardEvent) => getDefaultKeyBinding(e);
 
   const toggleBlockType = (blockType: DraftBlockType) => {
     const newEditorState = RichUtils.toggleBlockType(editorState, blockType);
@@ -261,7 +262,7 @@ const RichEditor: React.FC = () => {
           ref={editor}
           editorState={editorState}
           onChange={setEditorState}
-          spellCheck={true}
+          spellCheck
           placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
           blockStyleFn={getBlockStyle}
           customStyleMap={styleMap}
