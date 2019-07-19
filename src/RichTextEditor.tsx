@@ -48,7 +48,7 @@ const StyleButton = <S extends Style>({
 
   return (
     <Tooltip title={label} onMouseDown={handleToggle}>
-      <IconButton>{icon}</IconButton>
+      <IconButton style={{ height: 48 }}>{icon}</IconButton>
     </Tooltip>
   );
 };
