@@ -5,7 +5,6 @@ import {
   FormatQuote,
   FormatUnderlined,
 } from '@material-ui/icons';
-import classNames from 'classnames';
 import {
   ContentBlock,
   DraftBlockType,
@@ -16,6 +15,7 @@ import {
   EditorState,
   getDefaultKeyBinding,
   RichUtils,
+  SelectionState,
 } from 'draft-js';
 import { find, pipe, prop } from 'ramda';
 import React, { KeyboardEvent, MouseEvent, SFC } from 'react';
@@ -110,9 +110,9 @@ const BlockStyleControls: SFC<BlockStyleControlsProps> = ({
   const activeType = findActive(blockTypes);
 
   return (
-    <div className="RichEditor-controls" style={{ minWidth: 130, zIndex: 2 }}>
+    <div className="RichEditor-controls" style={{ minWidth: 140, zIndex: 2 }}>
       <Select
-        placeholder="Type..."
+        placeholder="Block Type..."
         options={blockValues}
         value={activeType || null}
         onChange={pipe(
@@ -201,6 +201,10 @@ const RichEditor: React.FC = () => {
 
   const editor = React.useRef<Editor>(null);
 
+  const [selection, setSelection] = React.useState<SelectionState>(
+    SelectionState.createEmpty(''),
+  );
+
   const focus = () => {
     const { current } = editor;
 
@@ -209,9 +213,6 @@ const RichEditor: React.FC = () => {
     }
   };
 
-  const onChange = (newEditorState: EditorState) =>
-    setEditorState(newEditorState);
-
   const handleKeyCommand = (
     command: DraftEditorCommand,
     editorState: EditorState,
@@ -219,7 +220,7 @@ const RichEditor: React.FC = () => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
 
     if (newState) {
-      onChange(newState);
+      setEditorState(newState);
 
       return 'handled';
     } else {
@@ -231,7 +232,7 @@ const RichEditor: React.FC = () => {
     if (e.keyCode === 9 /* TAB */) {
       const newEditorState = RichUtils.onTab(e, editorState, 4 /* maxDepth */);
       if (newEditorState !== editorState) {
-        onChange(newEditorState);
+        setEditorState(newEditorState);
       }
       return null;
     }
@@ -239,24 +240,25 @@ const RichEditor: React.FC = () => {
   };
 
   const toggleBlockType = (blockType: DraftBlockType) => {
-    onChange(RichUtils.toggleBlockType(editorState, blockType));
+    const newEditorState = RichUtils.toggleBlockType(editorState, blockType);
+    setEditorState(EditorState.acceptSelection(newEditorState, selection));
   };
 
-  const toggleInlineStyle = (inlineStyle: string) => {
-    onChange(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+  const toggleInlineStyle = (inlineStyle: DraftInlineStyleType) => {
+    setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
   };
 
   // If the user changes block type before entering any text, we can
   // either style the placeholder or hide it. Let's just hide it now.
   const contentState = editorState.getCurrentContent();
 
-  const hasText = contentState.hasText();
+  const hasText = contentState.isEmpty();
 
-  const isUnStyled =
+  const isUnstyled =
     contentState
       .getBlockMap()
       .first()
-      .getType() !== 'unstyled';
+      .getType() === 'unstyled';
 
   return (
     <div className="RichEditor-root">
@@ -278,22 +280,20 @@ const RichEditor: React.FC = () => {
           onToggle={toggleInlineStyle}
         />
       </div>
-      <div
-        className={classNames('RichEditor-editor', {
-          'RichEditor-hidePlaceholder': hasText && isUnStyled,
-        })}
-        onClick={focus}
-      >
+      <div className="RichEditor-editor" onClick={focus}>
         <Editor
+          ref={editor}
+          editorState={editorState}
+          onChange={setEditorState}
+          spellCheck={true}
+          placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
           blockStyleFn={getBlockStyle}
           customStyleMap={styleMap}
-          editorState={editorState}
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={mapKeyToEditorCommand}
-          onChange={onChange}
-          placeholder={isUnStyled ? '' : 'Tell a story...'}
-          ref={editor}
-          spellCheck={true}
+          onBlur={() => {
+            setSelection(editorState.getSelection());
+          }}
         />
       </div>
     </div>
