@@ -14,7 +14,7 @@
     "classnames": "^2.2.6",
     "draft-js": "^0.10.5",
     "immutable": "^4.0.0-rc.12",
-    "prismjs": "^1.16.0",
+    "prismjs": "^1.24.0",
     "ramda": "^0.26.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
